@@ -1,4 +1,4 @@
-import socket, threading, sys, select, os, time
+import socket, threading, sys, decimal
 
 MESSAGE_LENGTH = 1024
 PORT = 12345
@@ -39,6 +39,19 @@ def login(command):
     else:
         logged_in_users[username] = client_socket
         return([username, "Login successful."])
+    
+# Closes the socket and removes the user's session 
+def close_client_socket(socket, user):
+    # Close client socket
+    socket.close()
+    # Remove user from logged_in_users dictionary upon disconnect
+    for user in logged_in_users.copy():
+        if logged_in_users[user] == socket:
+            del logged_in_users[user]
+
+    
+
+
 
 def handle_client(client_socket):
     # The currect session user
@@ -58,17 +71,30 @@ def handle_client(client_socket):
 
         else:
             print(f'{user}: {data}')
-            # Echo back to client
-            client_socket.sendall(data.encode())
 
+            if command[0] == "exit":
+                close_client_socket(client_socket, user)
+                return
+
+            elif command[0] == "balance":
+                feedback = str(balances[user])
+
+            elif command[0] == "withdraw" and len(command) == 2 and command[1].isdecimal():
+                amount = decimal.Decimal(command[1])
+                if amount <= balances[user]:
+                    feedback = "Success"
+                    balances[user] -= amount
+                else:
+                    feedback = "Insufficient Balance"
+
+            elif command[0] == "deposit" and len(command) == 2 and command[1].isdecimal():
+                balances[user] += decimal.Decimal(command[1])
+                feedback = "Success"
+
+            else:
+                feedback = "Invalid Operations"
+        
         client_socket.sendall(feedback.encode())
-
-    # Close client socket
-    client_socket.close()
-    # Remove user from logged_in_users dictionary upon disconnect
-    for user in logged_in_users.copy():
-        if logged_in_users[user] == client_socket:
-            del logged_in_users[user]
 
 # Set up server socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

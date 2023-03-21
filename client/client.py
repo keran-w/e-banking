@@ -35,20 +35,13 @@ while True:
     if len(message) > MESSAGE_LENGTH:
         print("Invalid message")
 
+    else:
+        client_socket.sendall(message.encode())
+        data = client_socket.recv(MESSAGE_LENGTH).decode()
+        print(f'Received: {data}')
+
     if message == "exit":
         client_socket.close()
         exit()
 
-#     else if message[:len(8)] == "withdraw":
 
-#     else if message[:len(7)] == "deposit":
-#
-    else if message[:len(7)] == "balance":
-
-    else:
-        print("Invalid message")
-        continue
-
-    client_socket.sendall(message.encode())
-    data = client_socket.recv(MESSAGE_LENGTH).decode()
-    print(f'Received: {data}')
