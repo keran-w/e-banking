@@ -1,8 +1,11 @@
-import socket, threading, sys, decimal
+import socket, threading, sys, decimal, math, random, pickle
+import util
 
 MESSAGE_LENGTH = 1024
 PORT = 12345
 MAX_CONNECTION = 5
+rsa_public_key = 0
+rsa_private_key = 0
 
 # Global dictionary to store account information
 # username : password
@@ -54,6 +57,9 @@ def close_client_socket(socket, user):
 
 
 def handle_client(client_socket):
+    client_socket.sendall(pickle.dumps(rsa_public_key))
+    session_key = util.rsa_decrypt(rsa_private_key, pickle.loads(client_socket.recv(MESSAGE_LENGTH)))
+
     # The currect session user
     user = ""
 
@@ -96,6 +102,9 @@ def handle_client(client_socket):
         
         client_socket.sendall(feedback.encode())
 
+# RSA setup
+rsa_public_key, rsa_private_key = util.generate_keypair()
+
 # Set up server socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(('localhost', PORT))
@@ -103,8 +112,13 @@ server_socket.listen(MAX_CONNECTION)
 print(f'Server is listening on port {PORT}...')
 
 # Handle incoming client connections
+# You might need to use "ctrl + pause" to shut down the server in console
 while True:
     client_socket, addr = server_socket.accept()
     # Start a new thread to handle the client
     client_thread = threading.Thread(target=handle_client, args=(client_socket,))
     client_thread.start()
+
+
+# TODO: outdate sessions and regerates public and private keys
+# sha1?
