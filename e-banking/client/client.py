@@ -1,5 +1,5 @@
 import socket, sys, pickle
-import util
+from .. import util
 
 MESSAGE_LENGTH = 1024
 PORT = 12345
@@ -15,14 +15,14 @@ client_socket.sendall(pickle.dumps(util.rsa_encrypt(server_rsa_publickey, str(se
 
 # account creation or login
 if len(sys.argv) == 2 and sys.argv[1] == "-dev":
-   create_dev_account = "c dev 114514"
-   login_dev_account = "l dev 114514"
-   client_socket.sendall(create_dev_account.encode())
-   response = client_socket.recv(MESSAGE_LENGTH).decode()
-   print(response)
-   client_socket.sendall(login_dev_account.encode())
-   response = client_socket.recv(MESSAGE_LENGTH).decode()
-   print(response)
+    create_dev_account = "c dev 114514"
+    login_dev_account = "l dev 114514"
+    client_socket.sendall(create_dev_account.encode())
+    response = client_socket.recv(MESSAGE_LENGTH).decode()
+    print(response)
+    client_socket.sendall(login_dev_account.encode())
+    response = client_socket.recv(MESSAGE_LENGTH).decode()
+    print(response)
 
 else:
     while True:

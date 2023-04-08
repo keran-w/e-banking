@@ -1,6 +1,8 @@
 import socket, threading, sys, decimal, math, random, pickle
-import supersecuresocket
-from ..util import util
+import sys
+sys.path.append("..")
+from .. import util
+from .. import supersecuresocket as SSS
 
 MESSAGE_LENGTH = 1024
 PORT = 12345
@@ -43,8 +45,8 @@ def login(command):
     else:
         logged_in_users[username] = client_socket
         return([username, "Login successful."])
-    
-# Closes the socket and removes the user's session 
+
+# Closes the socket and removes the user's session
 def close_client_socket(socket, user):
     # Close client socket
     socket.close()
@@ -53,7 +55,7 @@ def close_client_socket(socket, user):
         if logged_in_users[user] == socket:
             del logged_in_users[user]
 
-    
+
 
 
 
@@ -104,14 +106,14 @@ def handle_client(client_socket):
 
             else:
                 feedback = "Invalid Operations"
-        
+
         client_socket.sendall(feedback.encode())
 
 # RSA setup
 rsa_public_key, rsa_private_key = util.generate_keypair()
 
 # Set up server socket
-server_socket = supersecuresocket.SSS(socket.AF_INET, socket.SOCK_STREAM)
+server_socket = SSS.SSS(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(('localhost', PORT))
 server_socket.listen(MAX_CONNECTION)
 print(f'Server is listening on port {PORT}...')
@@ -128,3 +130,5 @@ while True:
 # TODO: outdate sessions and regerates public and private keys
 # sha1?
 # server and client verify each other?
+# obfuscator?
+# delete dev options
