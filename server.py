@@ -1,6 +1,4 @@
 import socket, threading, sys, decimal, math, random, pickle
-import sys
-sys.path.append("..")
 import util
 import supersecuresocket as SSS
 
@@ -60,14 +58,14 @@ def close_client_socket(socket, user):
 
 
 def handle_client(client_socket):
-    client_socket.sendall(pickle.dumps(rsa_public_key))
-    session_key = util.rsa_decrypt(rsa_private_key, pickle.loads(client_socket.recv(MESSAGE_LENGTH)))
+    client_socket.SENDALL(pickle.dumps(rsa_public_key))
+    session_key = util.rsa_decrypt(rsa_private_key, pickle.loads(client_socket.RECV(MESSAGE_LENGTH)))
 
     # The currect session user
     user = ""
 
     while True:
-        data = client_socket.recv(MESSAGE_LENGTH).decode()
+        data = client_socket.RECV(MESSAGE_LENGTH).decode()
         command = data.split()
         feedback = ""
 
@@ -107,7 +105,7 @@ def handle_client(client_socket):
             else:
                 feedback = "Invalid Operations"
 
-        client_socket.sendall(feedback.encode())
+        client_socket.SENDALL(feedback.encode())
 
 # RSA setup
 rsa_public_key, rsa_private_key = util.generate_keypair()
@@ -122,6 +120,7 @@ print(f'Server is listening on port {PORT}...')
 # You might need to use "ctrl + pause" to shut down the server in console
 while True:
     client_socket, addr = server_socket.accept()
+    client_socket = SSS.SSS(fileno=client_socket.detach())
     # Start a new thread to handle the client
     client_thread = threading.Thread(target=handle_client, args=(client_socket,))
     client_thread.start()
