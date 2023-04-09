@@ -1,6 +1,6 @@
 import socket, threading, sys, decimal, math, random, pickle
-import supersecuresocket
-from ..util import util
+import util
+import supersecuresocket as SSS
 
 MESSAGE_LENGTH = 1024
 PORT = 12345
@@ -43,8 +43,8 @@ def login(command):
     else:
         logged_in_users[username] = client_socket
         return([username, "Login successful."])
-    
-# Closes the socket and removes the user's session 
+
+# Closes the socket and removes the user's session
 def close_client_socket(socket, user):
     # Close client socket
     socket.close()
@@ -53,19 +53,19 @@ def close_client_socket(socket, user):
         if logged_in_users[user] == socket:
             del logged_in_users[user]
 
-    
+
 
 
 
 def handle_client(client_socket):
-    client_socket.sendall(pickle.dumps(rsa_public_key))
-    session_key = util.rsa_decrypt(rsa_private_key, pickle.loads(client_socket.recv(MESSAGE_LENGTH)))
+    client_socket.SENDALL(pickle.dumps(rsa_public_key))
+    session_key = util.rsa_decrypt(rsa_private_key, pickle.loads(client_socket.RECV(MESSAGE_LENGTH)))
 
     # The currect session user
     user = ""
 
     while True:
-        data = client_socket.recv(MESSAGE_LENGTH).decode()
+        data = client_socket.RECV(MESSAGE_LENGTH).decode()
         command = data.split()
         feedback = ""
 
@@ -104,14 +104,14 @@ def handle_client(client_socket):
 
             else:
                 feedback = "Invalid Operations"
-        
-        client_socket.sendall(feedback.encode())
+
+        client_socket.SENDALL(feedback.encode())
 
 # RSA setup
 rsa_public_key, rsa_private_key = util.generate_keypair()
 
 # Set up server socket
-server_socket = supersecuresocket.SSS(socket.AF_INET, socket.SOCK_STREAM)
+server_socket = SSS.SSS(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(('localhost', PORT))
 server_socket.listen(MAX_CONNECTION)
 print(f'Server is listening on port {PORT}...')
@@ -120,6 +120,7 @@ print(f'Server is listening on port {PORT}...')
 # You might need to use "ctrl + pause" to shut down the server in console
 while True:
     client_socket, addr = server_socket.accept()
+    client_socket = SSS.SSS(fileno=client_socket.detach())
     # Start a new thread to handle the client
     client_thread = threading.Thread(target=handle_client, args=(client_socket,))
     client_thread.start()
@@ -128,3 +129,5 @@ while True:
 # TODO: outdate sessions and regerates public and private keys
 # sha1?
 # server and client verify each other?
+# obfuscator?
+# delete dev options
