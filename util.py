@@ -38,8 +38,7 @@ def generate_prime_number(num_bits):
         if is_prime(p):
             return p
 
-def generate_keypair():
-    num_bits = 512
+def generate_keypair(num_bits):
     p = generate_prime_number(num_bits)
     q = generate_prime_number(num_bits)
     n = p * q
