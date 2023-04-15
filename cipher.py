@@ -190,7 +190,7 @@ if __name__ == '__main__':
     assert str(des.proc(c, 'DEC'))[2:-1] == '110100011001011110011001'
     
     # example 
-    message = b'withdraw 100 dolloars'
+    message = b'withdraw 100 dollars'
     secret_key = b'theSecretKey'
     hmac_key = SHA1(secret_key).finish()
     import hmac
