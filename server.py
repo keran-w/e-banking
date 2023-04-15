@@ -59,14 +59,14 @@ def close_client_socket(socket, user):
 
 
 def handle_client(client_socket):
-    client_socket.SENDALL(pickle.dumps(rsa_public_key))
-    session_key = util.rsa_decrypt(rsa_private_key, pickle.loads(client_socket.RECV(MESSAGE_LENGTH)))
+    client_socket.sendall(pickle.dumps(rsa_public_key))
+    session_key = util.rsa_decrypt(rsa_private_key, pickle.loads(client_socket.recv(MESSAGE_LENGTH)))
 
     # The currect session user
     user = ""
 
     while True:
-        data = client_socket.RECV(MESSAGE_LENGTH).decode()
+        data = client_socket.RECV(MESSAGE_LENGTH, session_key).decode()
         command = data.split()
         feedback = ""
 
@@ -107,7 +107,7 @@ def handle_client(client_socket):
             else:
                 feedback = "Invalid Operations"
 
-        client_socket.SENDALL(feedback.encode())
+        client_socket.SENDALL(feedback.encode(), session_key)
 
 # RSA setup
 rsa_public_key, rsa_private_key = util.generate_keypair(NUM_BITS)
