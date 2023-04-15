@@ -67,16 +67,13 @@ unpack_bits = lambda bits: np.unpackbits(np.array([bits], dtype=np.uint8))[4:]
 class DES:
 
     def __init__(self, key):
-
-        self.key_schedule = np.zeros((16, 48), dtype=int)
         self.key = key.encode('ascii')
 
     def des(self, text):
         left_half, right_half = np.array_split(permute(IP, text), 2)
 
-        for i in range(16) if self.mode == 'ENC' else reversed(range(16)):
+        for _ in range(16) if self.mode == 'ENC' else reversed(range(16)):
             right_half_ = permute(EXP, right_half)
-            right_half_ = xor(right_half_, self.key_schedule[i])
             blocks = np.array_split(right_half_, 8)
             block_bits = np.zeros(32, dtype=int)
             for j in range(8):
