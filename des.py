@@ -68,7 +68,6 @@ class DES:
 
     def __init__(self, key):
 
-        self.key_schedule = np.zeros((16, 48), dtype=int)
         self.key = key.encode('ascii')
 
     def des(self, text):
@@ -76,7 +75,6 @@ class DES:
 
         for i in range(16) if self.mode == 'ENC' else reversed(range(16)):
             right_half_ = permute(EXP, right_half)
-            right_half_ = xor(right_half_, self.key_schedule[i])
             blocks = np.array_split(right_half_, 8)
             block_bits = np.zeros(32, dtype=int)
             for j in range(8):
