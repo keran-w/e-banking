@@ -1,10 +1,11 @@
-import socket, threading, sys, decimal, math, random, pickle
+import socket, threading, sys, decimal, math, random, pickle, time
 import util
 import supersecuresocket as SSS
 
 MESSAGE_LENGTH = 1024
 PORT = 12345
 MAX_CONNECTION = 5
+NUM_BITS = 512
 rsa_public_key = 0
 rsa_private_key = 0
 
@@ -70,7 +71,8 @@ def handle_client(client_socket):
         feedback = ""
 
         if not command:
-            print("User: " + user + "disconnected.")
+            print("User: " + user + " disconnected.")
+            del logged_in_users[user]
             break
 
         if not user:
@@ -108,7 +110,7 @@ def handle_client(client_socket):
         client_socket.SENDALL(feedback.encode())
 
 # RSA setup
-rsa_public_key, rsa_private_key = util.generate_keypair()
+rsa_public_key, rsa_private_key = util.generate_keypair(NUM_BITS)
 
 # Set up server socket
 server_socket = SSS.SSS(socket.AF_INET, socket.SOCK_STREAM)
@@ -127,7 +129,11 @@ while True:
 
 
 # TODO: outdate sessions and regerates public and private keys
-# sha1?
-# server and client verify each other?
+# HMAC and sha1?
+# password complexity
+# exit bug
+
 # obfuscator?
+
 # delete dev options
+# key num bits?
