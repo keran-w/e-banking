@@ -22,6 +22,15 @@ def login():
         while True:
             user_input = input("Enter 'create_account <username> <password>' to create an account\n"
                                "Enter 'login <username> <password>' to log in to an account\n")
+            words = user_input.split()
+            if len(words) != 3:
+                print("Invalid")
+                continue
+            if words[0] == "c" or words[0] == "create_account":
+                if not util.is_password_complex(words[2]):
+                    print("The password must be at least 8 characters long.\nThe password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+                    continue
+
             client_socket.SENDALL(user_input.encode())
             response = client_socket.RECV(MESSAGE_LENGTH).decode()
             print(response)

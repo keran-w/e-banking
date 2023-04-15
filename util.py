@@ -62,6 +62,19 @@ def rsa_decrypt(private_key, ciphertext):
     plain = [chr(pow(char, key, n)) for char in ciphertext]
     return ''.join(plain)
 
+def is_password_complex(password):
+    if len(password) < 8:
+        return False
+    if not any(c.isupper() for c in password):
+        return False
+    if not any(c.islower() for c in password):
+        return False
+    if not any(c.isdigit() for c in password):
+        return False
+    if not any(c in '!@#$%^&*()_+-={}[]|\\:;"<>,.?/`~' for c in password):
+        return False
+    return True
+
 def sha1(data):
     # Step 1: Prepare the message
     padding = b"\x80" + b"\x00" * (63 - (len(data) + 8) % 64)
