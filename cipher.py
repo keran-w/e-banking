@@ -173,6 +173,32 @@ def hmac_sha1(key, message):
     outer_hash = SHA1(outer_key + inner_hash).finish()
     return outer_hash
 
+class DESHMAC:
+    def __init__(self, key):
+        self.key = key
+        self.DES = DES(key.decode())
+        self._preproc()
+        
+    def _preproc(self):
+        self.hmac_key = SHA1(self.key).finish()
+        
+    def encrypt(self, message):
+        signature = hmac_sha1(self.hmac_key, message)
+        concat_message = message + signature.hex().encode()
+        concat_message = ''.join([bin(ord(c))[2:].zfill(8) for c in concat_message.decode()])
+        return self.DES.proc(concat_message.encode(), 'ENC')
+    
+    def decrypt(self, cipher_text):
+        try:
+            dec_text = self.DES.proc(cipher_text, 'DEC').decode()
+            dec_msg = ''.join([chr(int(dec_text[i:i+8],2)) for i in range(0, len(dec_text), 8)])
+            message_, signature_ = dec_msg[:-40], dec_msg[-40:]
+            assert signature_ == hmac_sha1(self.hmac_key, message_.encode()).hex()
+            return message_.encode()
+        except:
+            return b''
+            
+        
 
 if __name__ == '__main__':
     # test sha1
@@ -207,3 +233,17 @@ if __name__ == '__main__':
     assert hmac_value_ == hmac_value.hex()
     assert message_ == message.decode()
     
+    # test hmac
+    message = b'withdraw 100 dollars'
+    secret_key = b'theSecretKey'
+    hmac = DESHMAC(secret_key)
+    cipher_text = hmac.encrypt(message)
+    
+    # test a valid cipher text
+    message_ = hmac.decrypt(cipher_text)
+    assert message_.decode() == message.decode()
+    
+    # test an invalid cipher text
+    cipher_text_2 = cipher_text[:-1] + b'\x2e'
+    message_2 = hmac.decrypt(cipher_text_2)
+    assert message_2 == b''
