@@ -8,11 +8,11 @@ class SSS(socket.socket):
         super().__init__(family, type, proto, fileno)
         self.last_active = time.time()
 
-    def SENDALL(self, data: bytes, key: bytes) -> None:
-        cipher_text = DESHMAC(key).encrypt(data)
+    def SENDALL(self, data: bytes, key) -> None:
+        cipher_text = DESHMAC(str(key).encode()).encrypt(data)
         return super().sendall(cipher_text)
 
-    def RECV(self, length: bytes, key: bytes) -> bytes:
+    def RECV(self, length: bytes, key) -> bytes:
         self.last_active = time.time()
         cipher_text = super().recv(length)
-        return DESHMAC(key).decrypt(cipher_text)
+        return DESHMAC(str(key).encode()).decrypt(cipher_text)

@@ -194,7 +194,7 @@ class DESHMAC:
             dec_msg = ''.join([chr(int(dec_text[i:i+8],2)) for i in range(0, len(dec_text), 8)])
             message_, signature_ = dec_msg[:-40], dec_msg[-40:]
             assert signature_ == hmac_sha1(self.hmac_key, message_.encode()).hex()
-            return message_
+            return message_.encode()
         except:
             return b''
             
@@ -241,7 +241,7 @@ if __name__ == '__main__':
     
     # test a valid cipher text
     message_ = hmac.decrypt(cipher_text)
-    assert message_ == message.decode()
+    assert message_.decode() == message.decode()
     
     # test an invalid cipher text
     cipher_text_2 = cipher_text[:-1] + b'\x2e'
