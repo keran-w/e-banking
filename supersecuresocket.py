@@ -1,6 +1,6 @@
 import time
 import socket
-from cipher import HMAC
+from cipher import DESHMAC
 
 
 class SSS(socket.socket):
@@ -8,13 +8,11 @@ class SSS(socket.socket):
         super().__init__(family, type, proto, fileno)
         self.last_active = time.time()
 
-    def SENDALL(self, data: bytes, key: bytes):
-        self.hmac = HMAC(key, data)
-        cipher_text = self.hmac.encrypt()
+    def SENDALL(self, data: bytes, key: bytes) -> None:
+        cipher_text = DESHMAC(key).encrypt(data)
         return super().sendall(cipher_text)
 
-    def RECV(self, length: bytes, key: bytes):
+    def RECV(self, length: bytes, key: bytes) -> bytes:
         self.last_active = time.time()
         cipher_text = super().recv(length)
-        assert self.hmac.key == key
-        return self.hmac.decrypt(cipher_text)
+        return DESHMAC(key).decrypt(cipher_text)
