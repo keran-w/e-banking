@@ -16,6 +16,8 @@ class SSS(socket.socket):
     def RECV(self, length, key):
         self.last_active = time.time()
         cipher = super().recv(length)
+        if len(cipher) == 0:
+            return b""
         des = DES(str(key))
         p = des.proc(cipher, 'DEC').decode()
         p = ''.join([chr(int(p[i:i+8], 2)) for i in range(0, len(p), 8)])
