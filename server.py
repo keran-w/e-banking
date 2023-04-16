@@ -130,10 +130,9 @@ while True:
 
 # TODO: outdate sessions and regerates public and private keys
 # HMAC and sha1?
-# password complexity
-# exit bug
 
 # obfuscator?
 
 # delete dev options
+#delete dev outputs
 # key num bits?
