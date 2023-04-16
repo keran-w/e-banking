@@ -14,5 +14,6 @@ class SSS(socket.socket):
 
     def RECV(self, length: bytes, key) -> bytes:
         self.last_active = time.time()
+
         cipher_text = super().recv(length)
         return DESHMAC(str(key).encode()).decrypt(cipher_text)
