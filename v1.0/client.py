@@ -42,9 +42,9 @@ def operations(session_key):
             data = client_socket.RECV(MESSAGE_LENGTH, session_key).decode()
             print(f'Received: {data}')
 
-        if message == "exit":
+        if message[:4] == "exit":
             client_socket.close()
-            exit()
+            exit(1)
 
 print(f'Client initializing ...')
 while(True):
